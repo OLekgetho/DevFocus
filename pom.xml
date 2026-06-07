@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.devfocus</groupId>
+    <artifactId>devfocus-backend</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>DevFocus Backend</name>
+    <description>DevFocus - Developer Productivity Platform</description>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.6</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <java.version>25</java.version>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <modules>
+        <module>devfocus-shared</module>
+        <module>devfocus-gateway</module>
+        <module>devfocus-auth-service</module>
+        <module>devfocus-user-service</module>
+        <module>devfocus-github-service</module>
+        <module>devfocus-pomodoro-service</module>
+        <module>devfocus-task-service</module>
+        <module>devfocus-notification-service</module>
+    </modules>
+
+</project>
