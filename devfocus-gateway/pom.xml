@@ -19,4 +19,29 @@
     <name>DevFocus Gateway</name>
     <description>API gateway, routing and JWT pre-validation</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.devfocus</groupId>
+                <artifactId>devfocus-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.devfocus</groupId>
+            <artifactId>devfocus-shared</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
