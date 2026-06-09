@@ -1,0 +1,13 @@
+package com.devfocus.shared.constants;
+
+public enum ErrorCode {
+
+    // Auth errors
+    AUTH_TOKEN_EXPIRED, AUTH_TOKEN_INVALID, AUTH_TOKEN_MISSING, AUTH_FORBIDDEN,
+
+    // GitHub errors
+    GITHUB_TOKEN_EXPIRED, GITHUB_RATE_LIMITED, GITHUB_REPO_NOT_FOUND, GITHUB_API_ERROR,
+
+    // Business errors
+    USER_NOT_FOUND, PLAN_ALREADY_EXISTS, SESSION_NOT_ACTIVE, VALIDATION_ERROR, INTERNAL_ERROR
+}
