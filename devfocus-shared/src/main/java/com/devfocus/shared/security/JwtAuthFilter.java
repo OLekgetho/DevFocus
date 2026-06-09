@@ -1,5 +1,6 @@
 package com.devfocus.shared.security;
 
+import com.devfocus.shared.constants.AppConstants;
 import com.devfocus.shared.constants.ErrorCode;
 import com.devfocus.shared.exception.AppException;
 import jakarta.servlet.FilterChain;
@@ -20,7 +21,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String BEARER_PREFIX = AppConstants.BEARER_PREFIX;
 
     @Value("${aws.cognito.jwk-set-uri}")
     private String cognitoJwkSetUri;
@@ -32,7 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
 
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(AppConstants.AUTHORIZATION_HEADER);
 
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
 
