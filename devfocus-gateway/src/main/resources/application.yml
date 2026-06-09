@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: devfocus-gateway
+
+server:
+  port: 8080
+
+aws:
+  cognito:
+    jwk-set-uri: ${AWS_COGNITO_JWK_SET_URI}
