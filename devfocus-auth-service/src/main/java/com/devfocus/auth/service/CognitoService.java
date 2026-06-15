@@ -53,9 +53,30 @@ public class CognitoService {
         }
     }
 
-    public void createUser(String username, String email) {
+    public String getUser(String username) {
+
         try {
-            cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
+            AdminGetUserResponse response = cognitoClient.adminGetUser(AdminGetUserRequest
+                    .builder()
+                    .userPoolId(userPoolId)
+                    .username(username)
+                    .build());
+
+            return response.userAttributes()
+                    .stream().filter(attr -> "sub".equals(attr.name()))
+                    .map(AttributeType::value)
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(ErrorCode.INTERNAL_ERROR, HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Cognito sub attribute not found"));
+
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.INTERNAL_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, "Cognito user lookup failed");
+        }
+    }
+
+    public String createUser(String username, String email) {
+        try {
+            AdminCreateUserResponse response = cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
                     .userPoolId(userPoolId)
                     .username(username)
                     .messageAction(MessageActionType.SUPPRESS)
@@ -65,6 +86,12 @@ public class CognitoService {
                     .build()
             );
 
+            return response.user().attributes()
+                    .stream().filter(attr -> "sub".equals(attr.name()))
+                    .map(AttributeType::value)
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(ErrorCode.INTERNAL_ERROR, HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Cognito sub attribute not found"));
         } catch (AppException e) {
             throw e;
         } catch (Exception e) {
@@ -73,7 +100,7 @@ public class CognitoService {
         }
     }
 
-    public void setUserPassword(String username, String password) {
+    private void setUserPassword(String username, String password) {
 
         try {
             cognitoClient.adminSetUserPassword(AdminSetUserPasswordRequest.builder()
@@ -90,7 +117,7 @@ public class CognitoService {
         }
     }
 
-    public AdminInitiateAuthResponse issueTokens(String username, String password) {
+    private AdminInitiateAuthResponse issueTokens(String username, String password) {
 
         try {
             return cognitoClient.adminInitiateAuth(AdminInitiateAuthRequest
@@ -194,6 +221,14 @@ public class CognitoService {
         }
 
         return stringBuilder.toString();
+
+    }
+
+    public AdminInitiateAuthResponse authenticateAndIssueTokens(String username) {
+
+        String password =  passwordGenerator();
+        setUserPassword(username, password);
+        return issueTokens(username, password);
 
     }
 }
