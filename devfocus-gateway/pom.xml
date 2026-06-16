@@ -19,16 +19,6 @@
     <name>DevFocus Gateway</name>
     <description>API gateway, routing and JWT pre-validation</description>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.devfocus</groupId>
-                <artifactId>devfocus-shared</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>com.devfocus</groupId>
