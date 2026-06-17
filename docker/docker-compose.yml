@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: devfocus-postgres
+    environment:
+      POSTGRES_DB: devfocus
+      POSTGRES_USER: devfocus_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - devfocus_pgdata:/var/lib/postgresql/data
+
+
+volumes:
+  devfocus_pgdata:

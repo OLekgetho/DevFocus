@@ -1,0 +1,15 @@
+# Environment files - never commit secrets
+.env
+**/.env
+*.env.local
+!.env.example
+
+# IntelliJ
+.idea/
+
+# Maven build output
+target/
+
+# OS files
+.DS_Store
+Thumbs.db
