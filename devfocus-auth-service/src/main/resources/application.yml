@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: devfocus-auth-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: devfocus_auth
+  flyway:
+    schemas: devfocus_auth
+    locations: classpath:db/migration
+
+aws:
+  cognito:
+    jwk-set-uri: ${AWS_COGNITO_JWK_SET_URI}
+    user-pool-id: ${AWS_COGNITO_USER_POOL_ID}
+    client-id: ${AWS_COGNITO_CLIENT_ID}
+    
+  region: ${AWS_REGION}
+
+server:
+  port: 8081
+
+github:
+  client-id: ${GITHUB_CLIENT_ID}
+  client-secret: ${GITHUB_CLIENT_SECRET}
+  redirect-uri: ${GITHUB_REDIRECT_URI}
+
+encryption:
+  key: ${ENCRYPTION_KEY}

@@ -1,12 +1,12 @@
-package com.devfocus.gateway;
+package com.devfocus.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "com.devfocus")
-public class GatewayApplication {
+public class AuthApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
+        SpringApplication.run(AuthApplication.class, args);
     }
 }
