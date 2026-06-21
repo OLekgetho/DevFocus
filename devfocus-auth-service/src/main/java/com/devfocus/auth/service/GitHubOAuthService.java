@@ -1,5 +1,6 @@
 package com.devfocus.auth.service;
 
+import com.devfocus.auth.dto.GitHubEmail;
 import com.devfocus.auth.dto.GitHubTokenResponse;
 import com.devfocus.auth.dto.GitHubUserProfile;
 import com.devfocus.shared.constants.AppConstants;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @Service
 public class GitHubOAuthService {
@@ -94,5 +97,45 @@ public class GitHubOAuthService {
                     HttpStatus.BAD_GATEWAY,
                     "Failed to fetch Github user profile");
         }
+    }
+
+    public String fetchPrimaryEmail(String accessToken) {
+
+        try {
+            List<GitHubEmail> gitHubEmails = gitHubWebClient.get()
+                    .uri("/user/emails")
+                    .header(HttpHeaders.AUTHORIZATION, AppConstants.BEARER_PREFIX + accessToken)
+                    .retrieve()
+                    .bodyToFlux(GitHubEmail.class)
+                    .collectList()
+                    .block();
+
+            if (gitHubEmails == null || gitHubEmails.isEmpty()) {
+                throw new AppException(ErrorCode.GITHUB_API_ERROR,
+                        HttpStatus.BAD_GATEWAY,
+                        "Failed to fetch Github user email");
+            }
+
+            return getGitHubEmail(gitHubEmails);
+
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.GITHUB_API_ERROR,
+                    HttpStatus.BAD_GATEWAY,
+                    "No verified primary email available from GitHub");
+        }
+    }
+
+    private String getGitHubEmail(List<GitHubEmail> gitHubEmails) {
+        return gitHubEmails.stream()
+                .filter(e -> e.isPrimary() && e.isVerified())
+                .map(GitHubEmail::getEmail)
+                .findFirst()
+                .orElseThrow(() -> new AppException(
+                        ErrorCode.GITHUB_API_ERROR,
+                        HttpStatus.BAD_GATEWAY,
+                        "No verified primary email available from GitHub"
+                ));
     }
 }
