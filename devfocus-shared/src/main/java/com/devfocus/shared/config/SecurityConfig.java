@@ -27,7 +27,10 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(authorize ->
-                authorize.requestMatchers("/api/auth/**").permitAll()
+                authorize.requestMatchers("/api/auth/github/url",
+                        "/api/auth/github/callback",
+                        "/api/auth/refresh")
+                        .permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
                 );

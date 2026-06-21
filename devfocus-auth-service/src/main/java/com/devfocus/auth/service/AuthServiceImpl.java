@@ -133,7 +133,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String cognitoSub) {
-        cognitoService.logout(cognitoSub);
+        User user = userRepository.findByCognitoSub(cognitoSub)
+                .orElseThrow(() -> new AppException(
+                        ErrorCode.USER_NOT_FOUND, HttpStatus.NOT_FOUND, "User not found"));
+        cognitoService.logout(user.getGithubId().toString());
     }
 
     @Override
