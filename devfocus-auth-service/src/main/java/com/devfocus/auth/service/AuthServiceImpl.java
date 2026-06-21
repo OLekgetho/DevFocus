@@ -150,6 +150,12 @@ public class AuthServiceImpl implements AuthService {
                 githubTokenResponse.getAccessToken()
         );
 
+        String email = gitHubUserProfile.getEmail();
+
+        if (email == null || email.isBlank()) {
+            email = gitHubOAuthService.fetchPrimaryEmail(githubTokenResponse.getAccessToken());
+        }
+
         User user = userRepository.findByCognitoSub(cognitoSub)
                 .orElseThrow(() -> new AppException(
                         ErrorCode.USER_NOT_FOUND, HttpStatus.NOT_FOUND, "User not found"));
@@ -158,7 +164,7 @@ public class AuthServiceImpl implements AuthService {
 
         user.setGithubAccessToken(encryptedToken);
         user.setAvatarUrl(gitHubUserProfile.getAvatarUrl());
-        user.setEmail(gitHubUserProfile.getEmail());
+        user.setEmail(email);
         user.setGithubUsername(gitHubUserProfile.getLogin());
         user.setGithubId(gitHubUserProfile.getId());
         userRepository.save(user);
@@ -167,7 +173,7 @@ public class AuthServiceImpl implements AuthService {
         return GitHubUserResponse
                 .builder()
                 .avatarUrl(gitHubUserProfile.getAvatarUrl())
-                .email(gitHubUserProfile.getEmail())
+                .email(email)
                 .username(gitHubUserProfile.getLogin())
                 .build();
     }
