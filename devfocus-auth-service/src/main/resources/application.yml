@@ -30,3 +30,6 @@ github:
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}
   redirect-uri: ${GITHUB_REDIRECT_URI}
+
+encryption:
+  key: ${ENCRYPTION_KEY}

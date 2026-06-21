@@ -49,12 +49,18 @@ public class AuthServiceImpl implements AuthService {
                 githubTokenResponse.getAccessToken()
         );
 
+        String email = gitHubUserProfile.getEmail();
+
+        if (email == null || email.isBlank()) {
+            email = gitHubOAuthService.fetchPrimaryEmail(githubTokenResponse.getAccessToken());
+        }
+
         String encryptedToken =  encryptionService.encrypt(githubTokenResponse.getAccessToken());
 
         Optional<User> dbUserExists = userRepository.findByGithubId(gitHubUserProfile.getId());
 
         User user = dbUserExists.isEmpty()
-                ? createNewUser(gitHubUserProfile, encryptedToken)
+                ? createNewUser(gitHubUserProfile, encryptedToken, email)
                 : updateExistingUser(dbUserExists.get(), encryptedToken);
 
         return buildAuthResponse(user);
@@ -90,16 +96,16 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    private User createNewUser(GitHubUserProfile gitHubUserProfile, String encryptedToken) {
+    private User createNewUser(GitHubUserProfile gitHubUserProfile, String encryptedToken, String email) {
         boolean cognitoUserExists = cognitoService.userExists(gitHubUserProfile.getId().toString());
 
         String userCognitoSub =  !cognitoUserExists ?
-                cognitoService.createUser(gitHubUserProfile.getId().toString(), gitHubUserProfile.getEmail()) :
+                cognitoService.createUser(gitHubUserProfile.getId().toString(), email) :
                 cognitoService.getUser(gitHubUserProfile.getId().toString());
 
         User newUser = User.builder()
                 .avatarUrl(gitHubUserProfile.getAvatarUrl())
-                .email(gitHubUserProfile.getEmail())
+                .email(email)
                 .githubAccessToken(encryptedToken)
                 .lastSeenAt(Instant.now())
                 .cognitoSub(userCognitoSub)
