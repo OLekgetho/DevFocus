@@ -5,9 +5,16 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://devfocus.co.za
 
     steps:
       - name: Checkout code
@@ -22,22 +29,43 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::454252678041:role/devfocus-github-actions-role
+          aws-region: af-south-1
+
+      - name: Get runner public IP
+        id: ip
+        run: echo "ipv4=$(curl -s https://checkip.amazonaws.com)" >> "$GITHUB_OUTPUT"
+
+      - name: Open SSH to runner IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.EC2_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
       - name: Deploy to EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
         run: |
-
           mkdir -p ~/.ssh
           echo "$EC2_PRIVATE_KEY" > ~/.ssh/ec2_key.pem
           chmod 600 ~/.ssh/ec2_key.pem
-          
           echo "StrictHostKeyChecking=no" >> ~/.ssh/config
-          
-          scp -i ~/.ssh/ec2_key.pem devfocus-auth-service/target/devfocus-auth-service-1.0.0-SNAPSHOT.jar ubuntu@$EC2_HOST:/tmp/app.jar
-          
-          
-          ssh -i ~/.ssh/ec2_key.pem ubuntu@$EC2_HOST 'sudo mv /tmp/app.jar /opt/devfocus/app.jar && sudo systemctl restart devfocus'
-          
-          sleep 5
-          ssh -i ~/.ssh/ec2_key.pem ubuntu@$EC2_HOST 'curl -f http://localhost:8081/actuator/health || exit 1'
+
+          scp -i ~/.ssh/ec2_key.pem devfocus-auth-service/target/devfocus-auth-service-1.0.0-SNAPSHOT.jar "ubuntu@$EC2_HOST:/tmp/app.jar"
+          ssh -i ~/.ssh/ec2_key.pem "ubuntu@$EC2_HOST" 'sudo mv /tmp/app.jar /opt/devfocus/app.jar && sudo systemctl restart devfocus'
+
+          sleep 10
+          ssh -i ~/.ssh/ec2_key.pem "ubuntu@$EC2_HOST" 'curl -f http://localhost:8081/actuator/health || exit 1'
+
+      - name: Close SSH rule
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.EC2_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
