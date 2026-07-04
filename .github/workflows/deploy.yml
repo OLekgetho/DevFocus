@@ -1,0 +1,43 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'corretto'
+
+      - name: Build JAR
+        run: mvn clean package -DskipTests
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+        run: |
+
+          mkdir -p ~/.ssh
+          echo "$EC2_PRIVATE_KEY" > ~/.ssh/ec2_key.pem
+          chmod 600 ~/.ssh/ec2_key.pem
+          
+          echo "StrictHostKeyChecking=no" >> ~/.ssh/config
+          
+          scp -i ~/.ssh/ec2_key.pem devfocus-auth-service/target/devfocus-auth-service-1.0.0-SNAPSHOT.jar ubuntu@$EC2_HOST:/tmp/app.jar
+          
+          
+          ssh -i ~/.ssh/ec2_key.pem ubuntu@$EC2_HOST 'sudo mv /tmp/app.jar /opt/devfocus/app.jar && sudo systemctl restart devfocus'
+          
+          sleep 5
+          ssh -i ~/.ssh/ec2_key.pem ubuntu@$EC2_HOST 'curl -f http://localhost:8081/actuator/health || exit 1'
