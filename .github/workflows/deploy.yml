@@ -12,6 +12,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://devfocus.co.za
 
     steps:
       - name: Checkout code
