@@ -29,8 +29,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::454252678041:role/devfocus-github-actions-role
-          aws-region: af-south-1
+          role-to-assume: ${{ secrets.EC2_AWS_ROLE }}
+          aws-region: ${{ secrets.EC2_REGION }}
 
       - name: Get runner public IP
         id: ip
@@ -58,7 +58,7 @@ jobs:
           
           ssh -i ~/.ssh/ec2_key.pem "ubuntu@$EC2_HOST" '
             for i in $(seq 1 12); do
-              if curl -sf http://localhost:8081/actuator/health; then
+              if curl -sf http://localhost:$LOCALHOST_PORT/actuator/health; then
                 echo " — healthy after ${i}0s"
                 exit 0
               fi
