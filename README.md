@@ -5,7 +5,7 @@
  
 DevFocus is a developer productivity platform that combines Pomodoro-style focus sessions with GitHub activity tracking. Developers log in with their GitHub account, run focus sessions against real work, and see their productivity connected to actual commits and repositories.
  
-This repository contains the backend: a Spring Boot multi-module project structured as microservices and deployed as a monolith, running live at [devfocus.co.za](https://devfocus.co.za).
+This repository contains the backend: a Spring Boot multi-module project structured as microservices and deployed as a monolith.
  
 ## Tech Stack
  
