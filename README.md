@@ -16,7 +16,7 @@ This repository contains the backend: a Spring Boot multi-module project structu
 | Database | PostgreSQL 16, Flyway migrations |
 | Identity | AWS Cognito (admin auth flows) + GitHub OAuth |
 | Token security | AES-256-GCM encryption for stored GitHub tokens |
-| Infrastructure | AWS EC2 (af-south-1), Nginx, Let's Encrypt SSL |
+| Infrastructure | AWS EC2, Nginx, Let's Encrypt SSL |
 | Secrets | AWS Systems Manager Parameter Store + IAM instance roles |
 | CI/CD | GitHub Actions with OIDC federation (no stored AWS keys) |
  
