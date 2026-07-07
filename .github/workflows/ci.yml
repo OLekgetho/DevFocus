@@ -5,6 +5,10 @@ on:
     branches:
       - develop
       - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
 
 permissions:
   contents: read
