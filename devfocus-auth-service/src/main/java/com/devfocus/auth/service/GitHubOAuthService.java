@@ -27,15 +27,13 @@ public class GitHubOAuthService {
     public GitHubOAuthService(@Value("${github.client-id}")String clientId,
                               @Value("${github.client-secret}")String clientSecret,
                               @Value("${github.redirect-uri}")String redirectUri,
-                              WebClient gitHubWebClient) {
+                              WebClient gitHubWebClient,
+                              WebClient oauthClient) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
         this.gitHubWebClient = gitHubWebClient;
-        this.oauthClient = WebClient.builder()
-                .baseUrl("https://github.com")
-                .defaultHeader(HttpHeaders.ACCEPT, "application/json")
-                .build();
+        this.oauthClient = oauthClient;
     }
 
     public String buildAuthorizationUrl() {

@@ -16,4 +16,12 @@ public class GitHubApiClient {
                 .defaultHeader(HttpHeaders.USER_AGENT, "DevFocus-App");
         return builder.build();
     }
+
+    @Bean
+    WebClient oauthClient() {
+        WebClient.Builder builder = WebClient.builder()
+                .baseUrl("https://github.com")
+                .defaultHeader(HttpHeaders.ACCEPT, "application/json");
+        return builder.build();
+    }
 }
