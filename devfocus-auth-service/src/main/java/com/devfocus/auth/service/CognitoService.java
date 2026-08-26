@@ -100,7 +100,7 @@ public class CognitoService {
         }
     }
 
-    private void setUserPassword(String username, String password) {
+    public void setUserPassword(String username, String password) {
 
         try {
             cognitoClient.adminSetUserPassword(AdminSetUserPasswordRequest.builder()
